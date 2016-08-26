@@ -3,12 +3,16 @@ package com.jian.imageload.view;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Path;
 import android.graphics.Region;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.jian.imageload.ImageLoaderModel;
@@ -71,6 +75,7 @@ public class WImageView extends ImageView{
         if(options==null){
             options = ImageLoaderModel.instance().getOptionBuilder().build();
         }
+        setOnTouchListener(onTouchListener);
         ImageLoaderModel.instance().getImageLoader().displayImage(url,this,options,listener,progressListener);
     }
 
@@ -96,6 +101,36 @@ public class WImageView extends ImageView{
         }else {
             super.onDraw(cns);
         }
+
+    }
+
+    private OnTouchListener onTouchListener=new OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_UP:
+                    setColorFilter(null);
+                    break;
+                case MotionEvent.ACTION_DOWN:
+                    changeLight();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                    setColorFilter(null);
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
+    };
+    private void changeLight() {
+        int brightness=-10;
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.set(new float[] { 1, 0, 0, 0, brightness, 0, 1, 0, 0,
+                brightness, 0, 0, 1, 0, brightness, 0, 0, 0, 1, 0 });
+        setColorFilter(new ColorMatrixColorFilter(matrix));
 
     }
 
