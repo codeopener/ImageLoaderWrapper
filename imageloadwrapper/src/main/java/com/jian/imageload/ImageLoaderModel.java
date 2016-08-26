@@ -2,24 +2,20 @@ package com.jian.imageload;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.view.View;
-import android.widget.ImageView;
 
-import com.jian.imageload.listener.LoadListener;
-import com.jian.imageload.option.LoadOptoin;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 public class ImageLoaderModel {
     private ImageLoader mImageLoader;
 
-    private LoadOptoin mOptions;
+    private DisplayImageOptions.Builder mOptionBuilder;
+    private DisplayImageOptions.Builder mRoundOptionBuilder;
 
     private final static class ModelHolder
     {
@@ -36,9 +32,8 @@ public class ImageLoaderModel {
 
     public void init(Context context, int loadRes, int emptyRes, int failRes)
     {
-        mOptions = new LoadOptoin();
         ImageLoaderConfiguration.Builder config = new ImageLoaderConfiguration.Builder(context);
-        DisplayImageOptions.Builder options = new DisplayImageOptions.Builder();
+        mOptionBuilder = new DisplayImageOptions.Builder();
         //配置全局config
         config.threadPriority(Thread.NORM_PRIORITY - 2);
         config.denyCacheImageMultipleSizesInMemory();
@@ -47,19 +42,15 @@ public class ImageLoaderModel {
         config.diskCacheSize(50 * 1024 * 1024).threadPoolSize(6);
         config.tasksProcessingOrder(QueueProcessingType.LIFO);
         //提供默认options
-        options .cacheInMemory(true);
-        options.cacheOnDisk(true);
-        options.resetViewBeforeLoading(true);
-        options.delayBeforeLoading(150);
-        options.imageScaleType(ImageScaleType.IN_SAMPLE_INT);
-        options.bitmapConfig(Bitmap.Config.RGB_565);
-
-        options.showImageOnLoading(loadRes);
-        options.showImageForEmptyUri(emptyRes);
-        options.showImageOnFail(failRes);
-
-        mOptions.setOptions(options.build());
-
+        mOptionBuilder .cacheInMemory(true);
+        mOptionBuilder.cacheOnDisk(true);
+        mOptionBuilder.resetViewBeforeLoading(true);
+        mOptionBuilder.delayBeforeLoading(150);
+        mOptionBuilder.imageScaleType(ImageScaleType.IN_SAMPLE_INT);
+        mOptionBuilder.bitmapConfig(Bitmap.Config.RGB_565);
+        mOptionBuilder.showImageOnLoading(loadRes);
+        mOptionBuilder.showImageForEmptyUri(emptyRes);
+        mOptionBuilder.showImageOnFail(failRes);
         //真正初始化ImageLoader
         mImageLoader = ImageLoader.getInstance();
         mImageLoader.init(config.build());
@@ -70,44 +61,7 @@ public class ImageLoaderModel {
         return mImageLoader;
     }
 
-    public LoadOptoin getDefaultOptions()
-    {
-        return mOptions;
+    public DisplayImageOptions.Builder getOptionBuilder(){
+        return mOptionBuilder;
     }
-
-    public void displayImage(String uri, ImageView imageView)
-    {
-        displayImage(uri, imageView, mOptions);
-    }
-
-    public void displayImage(String uri, ImageView imageView,LoadOptoin options)
-    {
-        mImageLoader.displayImage(uri, imageView, options.getOptions());
-    }
-
-    public void displayImage(String uri, ImageView imageView,final LoadListener listener)
-    {
-        mImageLoader.displayImage(uri, imageView, mOptions.getOptions(), new ImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(String s, View view) {
-                listener.onLoadingStarted(s, view);
-            }
-
-            @Override
-            public void onLoadingFailed(String s, View view, FailReason failReason) {
-                listener.onLoadingFailed(s, view);
-            }
-
-            @Override
-            public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                listener.onLoadingComplete(s, view, bitmap);
-            }
-
-            @Override
-            public void onLoadingCancelled(String s, View view) {
-                listener.onLoadingCancelled(s, view);
-            }
-        });
-    }
-
 }

@@ -46,7 +46,7 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity{
-    private WImageView mIv;
+    private WImageView mIv,mIv1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity{
         setContentView(R.layout.activity_login);
         ImageLoaderModel.instance().init(getApplicationContext(), R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher);
         mIv = (WImageView) findViewById(R.id.iv);
-
+        mIv1 = (WImageView)findViewById(R.id.iv1);
     }
 
     @Override
@@ -64,7 +64,8 @@ public class LoginActivity extends AppCompatActivity{
 
     public void load(View v)
     {
-        ImageLoaderModel.instance().displayImage("http://img2.imgtn.bdimg.com/it/u=395920684,863299018&fm=21&gp=0.jpg", mIv);
+        mIv.displayImage("http://img2.imgtn.bdimg.com/it/u=395920684,863299018&fm=21&gp=0.jpg",true);
+        mIv1.displayImage("http://img2.imgtn.bdimg.com/it/u=395920684,863299018&fm=21&gp=0.jpg",false);
     }
 }
 
