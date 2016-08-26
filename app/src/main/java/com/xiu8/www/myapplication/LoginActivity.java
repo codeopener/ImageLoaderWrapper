@@ -64,8 +64,10 @@ public class LoginActivity extends AppCompatActivity{
 
     public void load(View v)
     {
-        mIv.displayImage("http://img2.imgtn.bdimg.com/it/u=395920684,863299018&fm=21&gp=0.jpg",true);
-        mIv1.displayImage("http://img2.imgtn.bdimg.com/it/u=395920684,863299018&fm=21&gp=0.jpg",false);
+        mIv.setRoundImage().setShowClickBg();
+        mIv.displayImage("http://img2.imgtn.bdimg.com/it/u=395920684,863299018&fm=21&gp=0.jpg");
+        mIv1.setShowClickBg().setRoundImage();
+        mIv1.displayImage("http://img2.imgtn.bdimg.com/it/u=395920684,863299018&fm=21&gp=0.jpg");
     }
 }
 

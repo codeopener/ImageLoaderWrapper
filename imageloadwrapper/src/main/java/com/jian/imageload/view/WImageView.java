@@ -33,16 +33,24 @@ public class WImageView extends ImageView{
 
     public WImageView(Context context) {
         super(context);
-        init();
     }
     public WImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    public WImageView setRoundImage() {
+        this.mIsRound = true;
         init();
+        return this;
+    }
+
+    public WImageView setShowClickBg(){
+        setOnTouchListener(onTouchListener);
+        return this;
     }
 
     public void init(){
-        mPaintFlagsDrawFilter = new PaintFlagsDrawFilter(0,
-                Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG);
+        mPaintFlagsDrawFilter = new PaintFlagsDrawFilter(0,Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG);
         paint = new Paint();
         paint.setAntiAlias(true);
         paint.setFilterBitmap(true);
@@ -58,50 +66,50 @@ public class WImageView extends ImageView{
     }
 
     public void displayImage(@NonNull String url){
-        displayImage(url,false);
-    }
-    public void displayImage(@NonNull String url,boolean isRound){
-        displayImage(url,isRound,null);
+        displayImage(url,null);
     }
 
-    public void displayImage(@NonNull String url, boolean isRound, DisplayImageOptions options){
-        displayImage(url,isRound,options,null);
+    public void displayImage(@NonNull String url, DisplayImageOptions options){
+        displayImage(url,options,null);
     }
-    public void displayImage(@NonNull String url, boolean isRound, DisplayImageOptions options,ImageLoadingListener listener){
-        displayImage(url,isRound,options,listener,null);
+    public void displayImage(@NonNull String url, DisplayImageOptions options,ImageLoadingListener listener){
+        displayImage(url,options,listener,null);
     }
-    public void displayImage(@NonNull String url, boolean isRound, DisplayImageOptions options,ImageLoadingListener listener,ImageLoadingProgressListener progressListener){
-        mIsRound = isRound;
+    public void displayImage(@NonNull String url, DisplayImageOptions options,ImageLoadingListener listener,ImageLoadingProgressListener progressListener){
         if(options==null){
             options = ImageLoaderModel.instance().getOptionBuilder().build();
         }
-        setOnTouchListener(onTouchListener);
         ImageLoaderModel.instance().getImageLoader().displayImage(url,this,options,listener,progressListener);
     }
 
     @Override
     protected void onDraw(Canvas cns) {
         if(mIsRound){
-            float h = getMeasuredHeight()- 3.0f;
-            float w = getMeasuredWidth()- 3.0f;
-            if (path == null) {
-                path = new Path();
-                path.addCircle(w/2.0f,h/2.0f,(float) Math.min(w/2.0f, (h / 2.0)),Path.Direction.CCW);
-                path.close();
-            }
-            cns.drawCircle(w/2.0f, h/2.0f,  Math.min(w/2.0f, h / 2.0f) + 1.5f, paint);
-            int saveCount = cns.getSaveCount();
-            cns.save();
-            cns.setDrawFilter(mPaintFlagsDrawFilter);
-            cns.clipPath(path, Region.Op.REPLACE);
-            cns.setDrawFilter(mPaintFlagsDrawFilter);
-            cns.drawColor(Color.WHITE);
+            getRoundCanvas(cns);
             super.onDraw(cns);
-            cns.restoreToCount(saveCount);
+            cns.restore();
         }else {
             super.onDraw(cns);
         }
 
+    }
+
+    private Canvas getRoundCanvas(Canvas cns){
+        float h = getMeasuredHeight()- 3.0f;
+        float w = getMeasuredWidth()- 3.0f;
+        if (path == null) {
+            path = new Path();
+            path.addCircle(w/2.0f,h/2.0f,(float) Math.min(w/2.0f, (h / 2.0)),Path.Direction.CCW);
+            path.close();
+        }
+        cns.drawCircle(w/2.0f, h/2.0f,  Math.min(w/2.0f, h / 2.0f) + 1.5f, paint);
+//            int saveCount = cns.getSaveCount();
+        cns.save();
+        cns.setDrawFilter(mPaintFlagsDrawFilter);
+        cns.clipPath(path, Region.Op.REPLACE);
+        cns.setDrawFilter(mPaintFlagsDrawFilter);
+        cns.drawColor(Color.WHITE);
+        return cns;
     }
 
     private OnTouchListener onTouchListener=new OnTouchListener() {
